@@ -2,9 +2,9 @@
 import createRegl from 'regl';
 
 function createTexture(regl, width, height) {
-  const data = new Uint8Array(width * height * 4);
+  const data = new Float32Array(width * height * 4);
   for (let i = 0; i < width * height; i++) {
-    data[i * 4 + 0] = 0xff;
+    data[i * 4 + 0] = 1;
     data[i * 4 + 1] = 0;
     data[i * 4 + 2] = 0;
     data[i * 4 + 3] = 1;
@@ -16,7 +16,6 @@ function createTexture(regl, width, height) {
   for (let row = 100; row < 110; row++) {
     for (let col = 100; col < 110; col++) {
       const index = getIndex(row, col);
-      // data[index] = 0;
       data[index + 1] = 0xff;
     }
   }
@@ -25,7 +24,8 @@ function createTexture(regl, width, height) {
     color: regl.texture({
   	  data,
       width,
-      height
+      height,
+      type: 'float',
   	}),
     depth: false,
     stencil: false
@@ -65,12 +65,13 @@ export default function drawRegl(canvas, updateColors) {
     precision highp float;
     uniform sampler2D u_tex;
     uniform vec2 u_res;
+    uniform float u_f; // feed rate
+    uniform float u_k; // kill rate
 
     void main () {
       float DA = 1.;
       float DB = 0.5;
-      float f = 0.055;
-      float k = 0.062;
+      float dt = 1.;
 
       // cheat
       if (gl_FragCoord.x < 1. || gl_FragCoord.y < 1. ||
@@ -101,8 +102,8 @@ export default function drawRegl(canvas, updateColors) {
         0.2 * (neighbor1 + neighbor2 + neighbor3 + neighbor4)
       );
 
-      color.r = clamp(A + DA * lap.r - A * B * B + f * (1. - A), 0., 1.);
-      color.g = clamp(B + DB * lap.g + A * B * B - (k + f) * B, 0., 1.);
+      color.r = clamp(A + dt * (DA * lap.r - A * B * B + u_f * (1. - A)), 0., 1.);
+      color.g = clamp(B + dt * (DB * lap.g + A * B * B - (u_k + u_f) * B), 0., 1.);
 
       gl_FragColor = vec4(color, 1.);
     }`,
@@ -113,6 +114,8 @@ export default function drawRegl(canvas, updateColors) {
     uniforms: {
       u_tex: regl.prop('input'),
       u_res: [width, height],
+      u_f: 0.055,
+      u_k: 0.062,
     },
     count: 6,
   });
@@ -166,14 +169,7 @@ export default function drawRegl(canvas, updateColors) {
         input: fbos[1],
       });
 
-      if (count >= 20 && count < 50) {
-        const pixels = regl.read({framebuffer: fbos[1]});
-        const index = getIndex(100, 99);
-        const val = Array.from(pixels.slice(index, index + 4)).map(x => x / 0xff);
-        console.log(val);
-      }
-
       fbos.reverse();
-    }, 20);
+    }, 0);
   }
 }
