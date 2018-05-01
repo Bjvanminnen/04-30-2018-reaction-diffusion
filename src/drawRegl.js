@@ -111,8 +111,8 @@ export default function drawRegl(canvas, feedRate, killRate) {
 
       vec3 mapVal = texture2D(u_map, gl_FragCoord.xy / u_res).rgb;
 
-      float feed_mod = mix(0.9, 1.0, mapVal.r);
-      float kill_mod = mix(0.9, 1.0, mapVal.g);
+      float feed_mod = 1.; //mix(0.9, 1.0, mapVal.r);
+      float kill_mod = 1.; //mix(0.9, 1.0, mapVal.g);
 
       float feed = u_f * feed_mod; // + u_f * (gl_FragCoord.y / u_res.y) * 0.1;
       float kill = u_k * kill_mod; // - u_k * (gl_FragCoord.x / u_res.x) * 0.03;
