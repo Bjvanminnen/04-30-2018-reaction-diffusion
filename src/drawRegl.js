@@ -13,10 +13,12 @@ function createTexture(regl, width, height) {
   const getIndex = (row, col) =>  (row * width + col) * 4;
 
   // add a patch of B's
-  for (let row = 100; row < 110; row++) {
-    for (let col = 100; col < 110; col++) {
+  for (let row = 0; row < height; row++) {
+    for (let col = 0; col < width; col++) {
       const index = getIndex(row, col);
-      data[index + 1] = 0xff;
+      if (Math.abs(row - col) < 5) {
+        data[index + 1] = Math.random();
+      }
     }
   }
 
@@ -44,7 +46,7 @@ function quad(left, right, top, bottom) {
   ];
 }
 
-export default function drawRegl(canvas, updateColors) {
+export default function drawRegl(canvas, feedRate, killRate) {
   const regl = createRegl({
     extensions: 'OES_texture_float',
     canvas,
@@ -70,13 +72,13 @@ export default function drawRegl(canvas, updateColors) {
 
     void main () {
       float DA = 1.;
-      float DB = 0.5;
+      float DB = 0.4;
       float dt = 1.;
 
       // cheat
       if (gl_FragCoord.x < 1. || gl_FragCoord.y < 1. ||
           abs(u_res.x - gl_FragCoord.x) < 1. || abs(u_res.y - gl_FragCoord.y) < 1.) {
-        gl_FragColor = vec4(1., 0., 0., 1.);
+        gl_FragColor = vec4(0., 0., 0., 1.);
         return;
       }
 
@@ -114,8 +116,8 @@ export default function drawRegl(canvas, updateColors) {
     uniforms: {
       u_tex: regl.prop('input'),
       u_res: [width, height],
-      u_f: 0.055,
-      u_k: 0.062,
+      u_f: feedRate,
+      u_k: killRate,
     },
     count: 6,
   });
@@ -129,7 +131,7 @@ export default function drawRegl(canvas, updateColors) {
     void main() {
       vec2 st = gl_FragCoord.xy / u_res;
       vec4 val = texture2D(u_tex, st);
-      vec3 color = vec3(val.r);
+      vec3 color = vec3(clamp(val.r - val.g, 0., 1.));
       gl_FragColor = vec4(color, 1.);
     }
     `,
@@ -147,9 +149,6 @@ export default function drawRegl(canvas, updateColors) {
   run();
 
   function run(assets) {
-
-    const getIndex = (row, col) =>  (row * width + col) * 4;
-
     let count = 0;
     let fbos = [
       createTexture(regl, width, height),
@@ -170,6 +169,6 @@ export default function drawRegl(canvas, updateColors) {
       });
 
       fbos.reverse();
-    }, 0);
+    }, 20);
   }
 }
