@@ -6,8 +6,10 @@ export default class App extends React.Component {
     return (
       <div>
         <ReactionDiffusion
-          feed={0.055}
-          kill={0.062}
+          feed={0.08}
+          kill={0.065}
+          width={1024}
+          height={768}
         />
         {/*<ReactionDiffusion
           feed={0.045}

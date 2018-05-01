@@ -16,19 +16,18 @@ export default class ReactionDiffussion extends React.Component {
 
   render() {
     return (
-      <div>
-        <canvas
-          ref={e => this.canvas = e}
-          width="1200"
-          height="700"
-          style={{
-            margin: 10,
-            padding: 5,
-            border: '1px solid black',
-            display: 'inline-block',
-          }}
-        />
-      </div>
+      <canvas
+        ref={e => this.canvas = e}
+        width={this.props.width}
+        height={this.props.height}
+        style={{
+          margin: 10,
+          // padding: 5,
+          // border: '1px solid black',
+          display: 'inline-block',
+          transform: 'scale(0.7)'
+        }}
+      />
     );
   }
 }
