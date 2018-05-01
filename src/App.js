@@ -1,6 +1,5 @@
 import React from 'react';
 import drawRegl from './drawRegl';
-import _ from 'lodash';
 
 export default class ReglApp extends React.Component {
   state = {
@@ -20,8 +19,8 @@ export default class ReglApp extends React.Component {
       <div>
         <canvas
           ref={e => this.canvas = e}
-          width="100"
-          height="100"
+          width="200"
+          height="200"
           style={{
             margin: 20,
             padding: 10,
