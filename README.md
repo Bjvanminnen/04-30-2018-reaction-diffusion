@@ -1,13 +1,3 @@
-This project was created after I found myself frequently creating small projects
-that were mostly just for playing, and I only stuck with for a little bit. Rather
-than having dozens of stale projects, I decided to try having a single repo with
-a bunch of different branches. We'll see how it goes
-
-List of branches
-(here is where I might start listing some of the branches and what's interesting
-about them)
-
-
 -------------------------------------------
 
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
